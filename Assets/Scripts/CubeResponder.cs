@@ -24,11 +24,11 @@ public class CubeResponder : MonoBehaviour, ICardboardGazeResponder {
 	}
 
 	void OnTriggerEnter() {
-		bluetoothManager.ToggleShock ("2004", true);
+//		bluetoothManager.ToggleShock ("2004", true);
 	}
 
 	void OnTriggerExit() {
-		bluetoothManager.ToggleShock ("2004", false);
+//		bluetoothManager.ToggleShock ("2004", false);
 	}
 
 

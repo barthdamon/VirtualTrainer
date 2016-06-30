@@ -38,14 +38,18 @@ public class BluetoothManager : MonoBehaviour {
 		return _shocking;
 	}
 
-	public void ToggleShock(string UUID, bool shock) {
-		Debug.Log ("Toggling Shocking");
-		byte[] data;
-		data = shock ? new byte[] {0x01} : new byte[] {0x00};
-//		armPositionManager.AddWriteValue (UUID, shock);
-		BluetoothLEHardwareInterface.WriteCharacteristic(_connectedID, _serviceUUID, UUID, data, data.Length, true, message => {
-			Debug.Log("Characteristic write success with message: " + message);
-		});
+	public IEnumerator ToggleShock() {
+		while (true) {
+			yield return new WaitForSeconds (10);
+			Debug.Log ("Toggling Shocking");
+			byte[] data;
+			data = _shocking ? new byte[] { 0x01 } : new byte[] { 0x00 };
+			_shocking = !_shocking;
+			//		armPositionManager.AddWriteValue (UUID, shock);
+			BluetoothLEHardwareInterface.WriteCharacteristic (_connectedID, _serviceUUID, "1004", data, data.Length, true, message => {
+				Debug.Log ("Characteristic write success with message: " + message);
+			});
+		}
 	}
 		
 
@@ -129,11 +133,11 @@ public class BluetoothManager : MonoBehaviour {
 
 	void Update() {
 		// UNCOMMENT TO READ INSTAD OF SUBSCRIBE
-//		foreach (CharStore armPos in armPositionManager.readStore) {
-//			if (armPos.UUID == "1001" || armPos.UUID == "1002" || armPos.UUID == "1003") {
-//				ReadValueAtId (armPos.UUID, "00110011-0000-0000-0000-000000000000");
-//			}
-//		}
+		foreach (CharStore armPos in armPositionManager.readStore) {
+			if (armPos.UUID == "1001" || armPos.UUID == "1002" || armPos.UUID == "1003") {
+				ReadValueAtId (armPos.UUID, "00110011-0000-0000-0000-000000000000");
+			}
+		}
 	}
 
 	void ReadValueAtId(string id, string serviceUUID) {
@@ -143,7 +147,7 @@ public class BluetoothManager : MonoBehaviour {
 //				Debug.Log("!!!!!!ID: " + id + " VALUE: " + BytesToString(value) + " !!!!!!");
 				armPositionManager.AddReadValue(id, BytesToString(value));
 				// UNCOMMENT TO SUBSCRIBE INSTEAD OF READ
-				SubscribeForUpdates(id, serviceUUID);
+//				SubscribeForUpdates(id, serviceUUID);
 			}
 		});
 	}
@@ -173,6 +177,7 @@ public class BluetoothManager : MonoBehaviour {
 		Debug.Log("<<<<< STARTING BLUETOOTH MANAGER>>>>");
 		cubeIndicator.GetComponent<Renderer>().material = disconnectedMaterial;
 		InitializeBluetooth ();
+		StartCoroutine (ToggleShock ());
 	}
 
 	void OnApplicationQuit() {

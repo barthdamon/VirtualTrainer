@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 [System.Serializable]
 public class JointUUIDSet: System.Object {
@@ -15,6 +16,9 @@ public class ArmJoint : MonoBehaviour {
 	public BluetoothManager bluetoothManager;
 	public ArmPositionManager positionManager;
 	public JointUUIDSet jointIds;
+
+	public Text hud;
+
 
 	Quaternion currentRotation;
 
@@ -38,11 +42,12 @@ public class ArmJoint : MonoBehaviour {
 		float y = positionManager.ValueForID (jointIds.y);
 		float z = positionManager.ValueForID (jointIds.z);
 //		Debug.Log ("ARM JOINT POSITION: " + "x: " + x + "y: " + y + "z: " + z);
-		currentRotation = Quaternion.Euler (currentRotation.x + x, currentRotation.y + y, currentRotation.z + z);
+		currentRotation = Quaternion.Euler (x, y, z);
+		hud.text = "x:" + x + " y:" + y + " z:" + z;
 	}
 
 	public void SendShock(bool forUpper, bool shock) {
 		string shocked = forUpper ? jointIds.upperShock : jointIds.lowerShock;
-		positionManager.bluetoothManager.ToggleShock (shocked, shock);
+//		positionManager.bluetoothManager.ToggleShock (shocked, shock);
 	}
 }
